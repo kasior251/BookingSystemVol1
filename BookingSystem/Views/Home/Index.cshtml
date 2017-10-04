@@ -1,0 +1,109 @@
+﻿@model BookingSystem.Models.Order
+@{
+//Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet" />
+    <title>Bestilling av flybilletter</title>
+    <script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
+    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //hent alle origin elementer fra routes tabellen
+            $.ajax({
+                url: '/Home/GetOrigin',
+                type: 'GET',
+                dataType: 'json',
+                success: function (originList) {
+                    showDropDown1(originList);
+                },
+                error: function (x, y, z) {
+                    alert("Problem rendering data. Please try again later 1 " + x + " " + y + " " + z);
+                }
+            });
+
+            function showDropDown1(originList) {
+                var result = "";
+                for (var i in originList) {
+                    result += "<option value='" + originList[i] + "'>" + originList[i] + "</option>";
+                }
+                $("#drop1").empty().append(result);
+            }
+
+            //opprett en hendelse på dropdown-listen når siden lastes
+            $("#drop1").click(function () {
+                var chosenOrigin = $(this).val();
+                $.ajax({
+                    url: '/Home/GetDestination',
+                    type: 'GET',
+                    data: { fromOrigin: chosenOrigin },
+                    dataType: 'json',
+                    success: function (destinationList) {
+                        showDropDown2(destinationList);
+                    },
+                    error: function (x, y, z) {
+                        alert("Problem rendering data. Please try again later");
+                    }
+                });
+            });
+
+            function showDropDown2(destinationList) {
+                var result = "";
+                for (var i in destinationList) {
+                    result += "<option value='" + destinationList[i] + "'>" + destinationList[i] + "</option>";
+                    $("#drop2").empty().append(result);
+                }
+            }
+
+            $("#search").click(function () {
+                var from = $("#drop1").val();
+                var to = $("#drop2").val();
+                $.ajax({
+                    url: '/Home/GetSchedule',
+                    type: "GET",
+                    data: { fromOrigin: from, toDestination: to },
+                    dataType: 'json',
+                    success: function (scheduleList) {
+                        showFlights(scheduleList);
+                    },
+                    error: function (x, y, x) {
+                        $("#routes").empty().append(x.toString());
+                    }
+                });
+            });
+
+            function showFlights(scheduleList) {
+                var data = "<table class='table'><tr><th>Departure</th><th>Arrival</th><th>Pris</th></tr>";
+                for (var s in scheduleList) {
+                    data += "<tr><td>" + scheduleList[0].departureDate + "</td><td>" + scheduleList[0].arrivalDate + "</td><td>" + scheduleList[0].price + "</td></tr>"
+                }
+                $("#flights").empty().append(data);
+            }
+        });
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div id="dropDown1" class="col col-sm-2">
+                From:<br />
+                <select id="drop1" class="btn btn-primary dropdown-toggle"></select>
+            </div>
+            <div id="dropDown2" class="col">
+                to: <br />
+                <select id="drop2" class="btn btn-primary dropdown-toggle"></select>
+            </div>
+            <button id="search" class="btn btn-success" name="search">Search flights</button>
+        </div>
+    </div>
+    Flights matching your criteria:
+    <div id="flights">
+    </div>
+    <div><a href="/Home/AddFlight">Add flight</a></div>
+</body>
+</html>
