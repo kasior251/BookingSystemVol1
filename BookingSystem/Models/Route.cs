@@ -10,6 +10,5 @@ namespace BookingSystem.Models
         public int id { get; set; }
         public string origin { get; set; }
         public string destination { get; set; }
-        public virtual List<Order> orders { get; set; }
     }
 }

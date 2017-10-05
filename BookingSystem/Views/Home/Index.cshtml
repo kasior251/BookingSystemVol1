@@ -1,5 +1,4 @@
-﻿@model BookingSystem.Models.Order
-@{
+﻿@{
 //Layout = null;
 }
 <!DOCTYPE html>
@@ -7,7 +6,7 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet" />
-    <title>Bestilling av flybilletter</title>
+    <title>Booking airline tickets</title>
     <script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
     <script src="~/Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
@@ -21,8 +20,8 @@
                 success: function (originList) {
                     showDropDown1(originList);
                 },
-                error: function (x, y, z) {
-                    alert("Problem rendering data. Please try again later 1 " + x + " " + y + " " + z);
+                error: function () {
+                    alert("Problem rendering data. Please try again later");
                 }
             });
 
@@ -51,6 +50,7 @@
                 });
             });
 
+            //vis alle elementer dropdown list nr 2
             function showDropDown2(destinationList) {
                 var result = "";
                 for (var i in destinationList) {
@@ -59,13 +59,15 @@
                 }
             }
 
+            //hent avganger når knappen search trykkes
             $("#search").click(function () {
                 var from = $("#drop1").val();
                 var to = $("#drop2").val();
+                var nr = $("#drop3").val();
                 $.ajax({
                     url: '/Home/GetSchedule',
                     type: "GET",
-                    data: { fromOrigin: from, toDestination: to },
+                    data: { fromOrigin: from, toDestination: to, passengers: nr },
                     dataType: 'json',
                     success: function (scheduleList) {
                         showFlights(scheduleList);
@@ -76,13 +78,28 @@
                 });
             });
 
+            //vis avganger
             function showFlights(scheduleList) {
-                var data = "<table class='table'><tr><th>Departure</th><th>Arrival</th><th>Pris</th></tr>";
-                for (var s in scheduleList) {
-                    data += "<tr><td>" + scheduleList[0].departureDate + "</td><td>" + scheduleList[0].arrivalDate + "</td><td>" + scheduleList[0].price + "</td></tr>"
+                if (scheduleList.length == 0) {
+                    $("#flights").empty().append("no match");
+                    $("#bookButton").css('visibility', 'hidden');
+                    return;
                 }
+                var data = "<form><table class='table'><tr><th>Select</th><th>Departure</th><th>Arrival</th><th>Pris</th></tr>";
+                for (var i in scheduleList) {
+                    data += "<tr><td><input type='radio' + name='flight' + id='flight' + value='" + scheduleList[i].id + "'></td>" + "<td>" + scheduleList[i].departureDate + "</td><td>" + scheduleList[i].arrivalDate + "</td><td>" + scheduleList[i].price + "</td></tr>";
+                }
+                data += "</form>"
                 $("#flights").empty().append(data);
+                $("#bookButton").css('visibility', 'visible');
             }
+
+            //gå til booking siden når book knappen trykkes
+            $("#book").click(function () {
+                var nr = $("#drop3").val(); 
+                var flightId = $("#flight").val();
+                window.location = '/Home/BookFlight?flightId=' + flightId + '&passengers=' + nr;
+            });
         });
 
     </script>
@@ -94,15 +111,32 @@
                 From:<br />
                 <select id="drop1" class="btn btn-primary dropdown-toggle"></select>
             </div>
-            <div id="dropDown2" class="col">
+            <div id="dropDown2" class="col col-sm-2">
                 to: <br />
                 <select id="drop2" class="btn btn-primary dropdown-toggle"></select>
             </div>
-            <button id="search" class="btn btn-success" name="search">Search flights</button>
+            <div id="dropDown3" class="col">
+                nr of passengers: <br />
+                <select id="drop3" class="btn btn-primary dropdown-toggle">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="105">105</option>
+                </select>
+            </div>
         </div>
+        <button id="search" class="btn btn-success" name="search">Search flights</button>
     </div>
-    Flights matching your criteria:
     <div id="flights">
+    </div>
+    <div id="bookButton" style="visibility: hidden">
+        <button id="book" class="btn btn-primary" name="book">Book selected flight</button>
     </div>
     <div><a href="/Home/AddFlight">Add flight</a></div>
 </body>

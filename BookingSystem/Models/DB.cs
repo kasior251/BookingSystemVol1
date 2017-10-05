@@ -14,7 +14,6 @@ namespace BookingSystem.Models
             Database.SetInitializer(new DBInit());
         }
 
-        public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<Route> Routes { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Ticket> Tickets { get; set; }

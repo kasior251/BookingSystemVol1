@@ -72,3 +72,4 @@ C:\Users\Kasia\source\repos\BookingSystem\BookingSystem\obj\Release\BookingSyste
 C:\Users\Kasia\source\repos\BookingSystem\BookingSystem\obj\Release\BookingSystem.csproj.CoreCompileInputs.cache
 C:\Users\Kasia\source\repos\BookingSystem\BookingSystem\obj\Release\BookingSystem.dll
 C:\Users\Kasia\source\repos\BookingSystem\BookingSystem\obj\Release\BookingSystem.pdb
+C:\Users\Kasia\source\repos\BookingSystem\BookingSystem\bin\Gat.Controls.MessageBox.dll

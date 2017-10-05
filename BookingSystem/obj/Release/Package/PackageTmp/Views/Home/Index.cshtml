@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = null;
+//Layout = null;
 }
 <!DOCTYPE html>
 <html>
@@ -21,7 +21,7 @@
                     showDropDown1(originList);
                 },
                 error: function (x, y, z) {
-                    alert("Problem rendering data. Please try again later 1 "  + x + " " + y +" " + z);
+                    alert("Problem rendering data. Please try again later 1 " + x + " " + y + " " + z);
                 }
             });
 
@@ -53,11 +53,38 @@
             function showDropDown2(destinationList) {
                 var result = "";
                 for (var i in destinationList) {
-                    result += "<option value'" + destinationList[i] + "'>" + destinationList[i] + "</option>";
+                    result += "<option value='" + destinationList[i] + "'>" + destinationList[i] + "</option>";
                     $("#drop2").empty().append(result);
                 }
             }
+
+            $("#search").click(function () {
+                var from = $("#drop1").val();
+                var to = $("#drop2").val();
+                $.ajax({
+                    url: '/Home/GetSchedule',
+                    type: "GET",
+                    data: { fromOrigin: from, toDestination: to },
+                    dataType: 'json',
+                    success: function (scheduleList) {
+                        showFlights(scheduleList);
+                    },
+                    error: function (x, y, x) {
+                        $("#routes").empty().append(x.toString());
+                    }
+                });
+            });
+
+            function showFlights(scheduleList) {
+                var data = "<form><table class='table'><tr><th>Select</th><th>Departure</th><th>Arrival</th><th>Pris</th></tr>";
+                for (var i in scheduleList) {
+                    data += "<tr><td><input type='radio' + name='flight' + value='" + scheduleList[i] + "'></td>" + "<td>" + scheduleList[i].departureDate + "</td><td>" + scheduleList[i].arrivalDate + "</td><td>" + scheduleList[i].price + "</td></tr>";
+                }
+                data += "</form>"
+                $("#flights").empty().append(data);
+            }
         });
+
     </script>
 </head>
 <body>
@@ -67,13 +94,15 @@
                 From:<br />
                 <select id="drop1" class="btn btn-primary dropdown-toggle"></select>
             </div>
-            <div id="dropDown2 class="col">
+            <div id="dropDown2" class="col">
+                to: <br />
                 <select id="drop2" class="btn btn-primary dropdown-toggle"></select>
             </div>
+            <button id="search" class="btn btn-success" name="search">Search flights</button>
         </div>
     </div>
-    Flights matching your criteria:
-    <div id="routes">
+    <div id="flights">
     </div>
+    <div><a href="/Home/AddFlight">Add flight</a></div>
 </body>
 </html>

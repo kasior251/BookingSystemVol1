@@ -13,6 +13,7 @@ namespace BookingSystem.Models
         public string arrivalDate { get; set; }
         public int seatsLeft { get; set; }
         public virtual Route route { get; set; }
+        public virtual List<Ticket> tickets { get; set; }
         public double price { get; set; }
     }
 }

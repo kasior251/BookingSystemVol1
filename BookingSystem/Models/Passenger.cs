@@ -13,10 +13,6 @@ namespace BookingSystem.Models
 
         public string lastName { get; set; }
 
-        public Sex sex { get; set; }
-
         public DateTime birthDate { get; set; }
-
-        public enum Sex { male, female };
     }
 }

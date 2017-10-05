@@ -134,7 +134,6 @@
     </Compile>
     <Compile Include="Models\DB.cs" />
     <Compile Include="Models\DBInit.cs" />
-    <Compile Include="Models\Order.cs" />
     <Compile Include="Models\Passenger.cs" />
     <Compile Include="Models\Route.cs" />
     <Compile Include="Models\Schedule.cs" />
@@ -149,6 +148,9 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Home\AddFlight.cshtml" />
+    <Content Include="Views\Home\BookFlight.cshtml" />
+    <Content Include="Views\Home\Summary.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

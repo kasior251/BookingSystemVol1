@@ -15,19 +15,9 @@ namespace BookingSystem.Controllers
     {
         private DB db = new DB();
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         [HttpGet]
         public ActionResult Index()
         {
-            List<Route> route = db.Routes.ToList();
             return View();
         }
 
@@ -93,7 +83,7 @@ namespace BookingSystem.Controllers
 
         }
 
-        public string GetSchedule(string fromOrigin, string toDestination)
+        public string GetSchedule(string fromOrigin, string toDestination, int passengers)
         {
             //finn alle routene som tilsvarer valgte strekningen
             List<int> rId = (from r in db.Routes
@@ -102,12 +92,75 @@ namespace BookingSystem.Controllers
             List<Schedule> allFlights = new List<Schedule>();
             foreach (int i in rId)
             {
-                allFlights = db.Schedules.Where(s => s.route.id == i).ToList();
+                allFlights = db.Schedules.Where(s => s.route.id == i && s.seatsLeft >= passengers).ToList();
             }
 
             var jsonSerializer = new JavaScriptSerializer();
             return jsonSerializer.Serialize(allFlights);
         }
 
+        public ActionResult BookFlight(int passengers, int flightId)
+        {
+            Session["Passengers"] = passengers;
+            Session["Schedule"] = flightId;
+            return View();
+        }
+
+        //redirectes ikke hit med til metoden over !#
+        [HttpPost]
+        public ActionResult BookFLight(List<Passenger> passenger)
+        {
+            //av en eller annen grunn det er bare én passenger i lista
+            var flightId = (int)Session["Schedule"];
+            var nr = (int)Session["Passengers"];
+            Ticket ticket = new Ticket();
+            ticket.schedule = db.Schedules.Find(flightId);
+            for (int i = 0; i < passenger.Count; i++)
+            {
+                db.Passengers.Add(passenger[i]);
+            }
+            db.Tickets.Add(ticket);
+            ticket.passengers = passenger;
+
+            var schedule = (from s in db.Schedules
+                         where s.id == flightId
+                         select s).FirstOrDefault();
+            schedule.seatsLeft -= nr;
+                        
+            try
+            {
+                db.SaveChanges();
+                Session["Ticket"] = (from t in db.Tickets
+                                     where (t.schedule).id == flightId
+                                     select t).Last();
+                return RedirectToAction("Summary");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return RedirectToAction("Error");
+            }
+        }
+
+        public ActionResult Summary()
+        {
+            Ticket ticket = (Ticket)Session["Ticket"];
+            return View(ticket);
+        }
+
+        public ActionResult Error()
+        {
+            return View();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
+ 
