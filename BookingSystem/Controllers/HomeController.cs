@@ -105,46 +105,51 @@ namespace BookingSystem.Controllers
             Session["Schedule"] = flightId;
             return View();
         }
-
-        //redirectes ikke hit med til metoden over !#
-        [HttpPost]
-        public ActionResult BookFLight(List<Passenger> passenger)
+      
+        public string Summary(string[] firstNames, string[] lastNames, string[] birthDates)
         {
-            //av en eller annen grunn det er bare én passenger i lista
+            var nr = firstNames.Length;
+            List<Passenger> passengers = new List<Passenger>();
+            for (int i = 0; i < nr; i++)
+            {
+                passengers.Add(new Passenger()
+                {
+                    firstName = firstNames[i],
+                    lastName = lastNames[i],
+                    birthDate = birthDates[i]
+                });
+            }
+
             var flightId = (int)Session["Schedule"];
-            var nr = (int)Session["Passengers"];
+            
             Ticket ticket = new Ticket();
             ticket.schedule = db.Schedules.Find(flightId);
-            for (int i = 0; i < passenger.Count; i++)
-            {
-                db.Passengers.Add(passenger[i]);
-            }
+            Session["Ticket"] = ticket;
             db.Tickets.Add(ticket);
-            ticket.passengers = passenger;
+            ticket.passengers = passengers;
 
             var schedule = (from s in db.Schedules
                          where s.id == flightId
                          select s).FirstOrDefault();
             schedule.seatsLeft -= nr;
+            string retString = "";
                         
             try
             {
                 db.SaveChanges();
-                Session["Ticket"] = (from t in db.Tickets
-                                     where (t.schedule).id == flightId
-                                     select t).Last();
-                return RedirectToAction("Summary");
+                retString = "OK";
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return RedirectToAction("Error");
+                retString = "error";   
             }
+            var jsonSerializer = new JavaScriptSerializer();
+            return jsonSerializer.Serialize(retString);
         }
 
-        public ActionResult Summary()
+        public ActionResult showConfirmation()
         {
-            Ticket ticket = (Ticket)Session["Ticket"];
+            Ticket ticket = (Ticket)(Session["Ticket"]);
             return View(ticket);
         }
 

@@ -14,13 +14,55 @@
     <script type="text/javascript">
         $(function () {
             $("#next").click(function () {
-                $("#passengers").css("visibility", "hidden");
+                for (i = 1; i <= @(nr); i++) {
+                    $("#fname"+i).prop('disabled', true);
+                    $("#lname"+i).prop('disabled', true);
+                    $("#bdate"+i).prop('disabled', true);
+                }
+
                 $("#payment").css("visibility", "visible");
             });
 
             $("#paymentOpts").click(function () {
                 $("#pay").css("visibility", "visible");
             })
+
+            $("#pay").click(function () {
+                var method = $("#paymentOpts").val();
+                if (method == "card") {
+                    $("#confirm").empty().append("<table><tr><th>Card number</th>" +
+                        "<td><input type='text' style='width: 40px;' maxlength = '4' /><input type='text' style='width: 40px;' maxlength = '4'  /><input type='text;' style='width: 40px;' maxlength = '4'  /><input type='text' style='width: 40px;' maxlength = '4'  /></td></tr>" +
+                        "<tr><th>expiration date</th><td><select><option>January</option><option>February</option><option>March</option><option>April</option><option>May</option><option>June</option><option>July</option><option>August</option><option>September</option><option>October</option><option>November</option><option>December</option></select><select><option>2017</option><option>2018</option><option>2019</option><option>2020</option></td></tr>" +
+                        "<tr><th>CVC</th><td><input type='text' style='width: 30px;' maxlength = '3' />");
+                } else {
+                    $("#confirm").empty().append("bla bla bla - add button");
+                }
+                $("#confirmButton").css('visibility', 'visible');
+            });
+
+            $("#confirmPayment").click(function () {
+                var fnames = [];
+                var lnames = []
+                var bdates = []
+                for (i = 1; i <= @(nr); i++) {
+                    fnames.push($("#fname" + i).val());
+                    lnames.push($("#lname" + i).val());
+                    bdates.push($("#bdate" + i).val());
+                }
+                $.ajax({
+                    url: '/Home/Summary',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { firstNames: fnames, lastNames: lnames, birthDates: bdates },
+                    success: function () {
+                        window.location = '/Home/ShowConfirmation';
+                    },
+                    error: function () {
+                        window.location = '/Home/Error';
+                    }
+                });
+                
+            });
         });
     </script>
 </head>
@@ -45,7 +87,11 @@
                  <option value="transfer">Bank transfer</option></select></td></tr>
             <tr><th id="cardNo" style="visibility: hidden"></th></tr>
         </table>
-        <button id="pay"class="btn btn-success" style="visibility: hidden">Next</button>
+        <button id="pay" class="btn btn-success" style="visibility: hidden">Next</button>
+    </div>
+    <div id="confirm"></div>
+    <div id="confirmButton" style="visibility: hidden">
+        <button id="confirmPayment" class="btn btn-success">Confrim your booking</button>
     </div>
 </body>
 </html>
