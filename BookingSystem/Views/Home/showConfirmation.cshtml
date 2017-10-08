@@ -1,26 +1,34 @@
 ﻿@model BookingSystem.Models.Ticket
 
 @{
-    ViewBag.Title = "showConfirmation";
+    ViewBag.Title = "Confirmation";
 }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Scripts/jquery-ui.min.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <h2>Your booking is comfirmed</h2>
 
-<h2>showConfirmation</h2>
+    <div>
+        <h4>Ticket</h4>
+        <br />
+        <dl class="dl-horizontal"></dl>
+    </div>
+    <p>
+        Confirmation nr: @Model.id
 
-<div>
-    <h4>Ticket</h4>
-    <hr />
-    <dl class="dl-horizontal">
-    </dl>
-</div>
-<p>
-    Id nr: @Model.id;
-    @for (int i = 0; i < Model.passengers.Count; i++)
-    {
-        @Model.passengers[i].firstName;
-        @Model.passengers[i].lastName;
-        @Model.passengers[i].birthDate;
+        @for (int i = 0; i < Model.passengers.Count; i++)
+        {   <h5>Passenger @(i + 1)</h5>
+    <p>@Html.LabelFor(model => model.passengers[i].firstName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].firstName</p>
 
-
-    }
+    <p>@Html.LabelFor(model => model.passengers[i].lastName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].lastName</p>
+        }
+    <br /> 
     
-</p>
+</body>
+</html>
+   

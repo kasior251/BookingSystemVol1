@@ -10,11 +10,11 @@ namespace BookingSystem.Models
     {
         public DB() : base("name=DB")
         {
-            Database.CreateIfNotExists();
-            Database.SetInitializer(new DBInit());
+            //Database.CreateIfNotExists();
+            //Database.SetInitializer(new DBInit());
         }
 
-        public virtual DbSet<Route> Routes { get; set; }
+        public DbSet<Route> Routes { get; set; }
         public virtual DbSet<Schedule> Schedules { get; set; }
         public virtual DbSet<Ticket> Tickets { get; set; }
         public virtual DbSet<Passenger> Passengers { get; set; }

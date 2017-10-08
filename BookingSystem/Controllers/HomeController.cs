@@ -21,27 +21,7 @@ namespace BookingSystem.Controllers
             return View();
         }
 
-        public ActionResult AddFlight()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult AddFlight(Route route)
-        {
-            try
-            {
-                db.Routes.Add(route);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.ToString());
-                return RedirectToAction("AddFlight");
-            }   
-        }
-
+        //Få alle mulige avgang-steder
         public string GetOrigin()
         {
             List<Route> allRoutes = db.Routes.ToList();
@@ -62,6 +42,7 @@ namespace BookingSystem.Controllers
 
         }
 
+        //få alle destinasjoner hvor man kan reise fra byen som passeres som argument
         public string GetDestination(string fromOrigin)
         {
             List<Route> allRoutes = db.Routes.ToList();
@@ -83,6 +64,7 @@ namespace BookingSystem.Controllers
 
         }
 
+        //få alle mulige flyvninger mellom de 2 byene, der det er ledige billetter som ønskes
         public string GetSchedule(string fromOrigin, string toDestination, int passengers)
         {
             //finn alle routene som tilsvarer valgte strekningen
@@ -99,14 +81,19 @@ namespace BookingSystem.Controllers
             return jsonSerializer.Serialize(allFlights);
         }
 
+        //hold av valgt flyvning, redirect til siden hvor bookingen gjennomføres
         public ActionResult BookFlight(int passengers, int flightId)
         {
             Session["Passengers"] = passengers;
             Session["Schedule"] = flightId;
+            Session["Price"] = (from s in db.Schedules
+                                where s.id == flightId
+                                select s.price).FirstOrDefault();
             return View();
         }
       
-        public string Summary(string[] firstNames, string[] lastNames, string[] birthDates)
+        //book billetten(e) i systemet
+        public string Summary(string[] firstNames, string[] lastNames)
         {
             var nr = firstNames.Length;
             List<Passenger> passengers = new List<Passenger>();
@@ -116,7 +103,6 @@ namespace BookingSystem.Controllers
                 {
                     firstName = firstNames[i],
                     lastName = lastNames[i],
-                    birthDate = birthDates[i]
                 });
             }
 
@@ -127,10 +113,13 @@ namespace BookingSystem.Controllers
             Session["Ticket"] = ticket;
             db.Tickets.Add(ticket);
             ticket.passengers = passengers;
+            ticket.id = ConfirmNr();
 
             var schedule = (from s in db.Schedules
                          where s.id == flightId
                          select s).FirstOrDefault();
+
+            //oppdater antall tilgj. seter
             schedule.seatsLeft -= nr;
             string retString = "";
                         
@@ -147,16 +136,32 @@ namespace BookingSystem.Controllers
             return jsonSerializer.Serialize(retString);
         }
 
-        public ActionResult showConfirmation()
+        //generere bookingsnummer
+        private string ConfirmNr()
+        {
+            string c = "11223344556677889900QWERTYUIOPASDFGHJKLZXCVBNM";
+            string number = "";
+            Random random = new Random();
+            for (int i = 0; i < 7; i++)
+            {
+                number += c[random.Next(c.Length)];
+            }
+            return number;
+        }
+
+        //vis side med bekreftelse av bookingen
+        public ActionResult ShowConfirmation()
         {
             Ticket ticket = (Ticket)(Session["Ticket"]);
             return View(ticket);
         }
 
+        //error side
         public ActionResult Error()
         {
             return View();
         }
+
 
         protected override void Dispose(bool disposing)
         {
