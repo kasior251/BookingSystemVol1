@@ -10,8 +10,8 @@ namespace BookingSystem.Models
     public class Schedule
     {
         public int id { get; set; }
-        public string departureDate { get; set; }
-        public string arrivalDate { get; set; }
+        public long departureDate { get; set; }
+        public long arrivalDate { get; set; }
         public int seatsLeft { get; set; }
         public Route route { get; set; }
         public List<Ticket> tickets { get; set; }

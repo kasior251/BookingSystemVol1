@@ -15,18 +15,21 @@
 
     <div>
         <h4>Ticket</h4>
-        <br />
         <dl class="dl-horizontal"></dl>
+        <div>
+            <p>
+                <h5>Confirmation nr: @Model.id</h5>
+
+                @for (int i = 0; i < Model.passengers.Count; i++)
+            {   <h5>Passenger @(i + 1)</h5>
+        <p>@Html.LabelFor(model => model.passengers[i].firstName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].firstName</p>
+
+        <p>@Html.LabelFor(model => model.passengers[i].lastName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].lastName</p>
+                }
+        </div>
+        
     </div>
-    <p>
-        Confirmation nr: @Model.id
-
-        @for (int i = 0; i < Model.passengers.Count; i++)
-        {   <h5>Passenger @(i + 1)</h5>
-    <p>@Html.LabelFor(model => model.passengers[i].firstName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].firstName</p>
-
-    <p>@Html.LabelFor(model => model.passengers[i].lastName, htmlAttributes: new { @class = "control-label col-md-2" }) @Model.passengers[i].lastName</p>
-        }
+    
     <br /> 
     
 </body>

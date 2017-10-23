@@ -65,7 +65,7 @@ namespace BookingSystem.Controllers
         }
 
         //få alle mulige flyvninger mellom de 2 byene, der det er ledige billetter som ønskes
-        public string GetSchedule(string fromOrigin, string toDestination, int passengers)
+        public string GetSchedule(string fromOrigin, string toDestination, int passengers, long date)
         {
             //finn alle routene som tilsvarer valgte strekningen
             List<int> rId = (from r in db.Routes
@@ -74,24 +74,40 @@ namespace BookingSystem.Controllers
             List<Schedule> allFlights = new List<Schedule>();
             foreach (int i in rId)
             {
-                allFlights = db.Schedules.Where(s => s.route.id == i && s.seatsLeft >= passengers).ToList();
+                allFlights = db.Schedules.Where(s => s.route.id == i && s.seatsLeft >= passengers && s.departureDate > date).ToList();
             }
 
             var jsonSerializer = new JavaScriptSerializer();
             return jsonSerializer.Serialize(allFlights);
         }
 
+        public long GetArrivalOutbound(int id)
+        {
+            long arrivalTime = (from s in db.Schedules
+                                where s.id == id
+                                select s.arrivalDate).FirstOrDefault();
+            return arrivalTime;
+        }
+
         //hold av valgt flyvning, redirect til siden hvor bookingen gjennomføres
-        public ActionResult BookFlight(int passengers, int flightId)
+        public ActionResult BookFlight(int passengers, int flightId, int returnId)
         {
             Session["Passengers"] = passengers;
             Session["Schedule"] = flightId;
-            Session["Price"] = (from s in db.Schedules
-                                where s.id == flightId
-                                select s.price).FirstOrDefault();
+            Session["ScheduleR"] = returnId;
+            int price = (from s in db.Schedules
+                            where s.id == flightId
+                            select s.price).FirstOrDefault();
+            if (returnId != 0)
+            {
+                price += (from s in db.Schedules
+                          where s.id == returnId
+                          select s.price).FirstOrDefault();
+            }
+            Session["Price"] = price;
             return View();
         }
-      
+
         //book billetten(e) i systemet
         public string Summary(string[] firstNames, string[] lastNames)
         {
@@ -107,22 +123,38 @@ namespace BookingSystem.Controllers
             }
 
             var flightId = (int)Session["Schedule"];
-            
+            var returnId = (int)Session["ScheduleR"];
+
             Ticket ticket = new Ticket();
-            ticket.schedule = db.Schedules.Find(flightId);
+            List<Schedule> schedules = new List<Schedule>();
+            schedules.Add(db.Schedules.Find(flightId));
+            if (returnId != 0)
+            {
+                schedules.Add(db.Schedules.Find(returnId));
+            }
             Session["Ticket"] = ticket;
             db.Tickets.Add(ticket);
             ticket.passengers = passengers;
+            ticket.schedule = schedules;
             ticket.id = ConfirmNr();
 
             var schedule = (from s in db.Schedules
                          where s.id == flightId
                          select s).FirstOrDefault();
 
+
             //oppdater antall tilgj. seter
             schedule.seatsLeft -= nr;
             string retString = "";
-                        
+
+            if (returnId != 0)
+            {
+                var scheduleR = (from s in db.Schedules
+                                 where s.id == returnId
+                                 select s).FirstOrDefault();
+                scheduleR.seatsLeft -= nr;
+            }
+
             try
             {
                 db.SaveChanges();
@@ -130,6 +162,7 @@ namespace BookingSystem.Controllers
             }
             catch (Exception e)
             {
+                Console.WriteLine(e.ToString());
                 retString = "error";   
             }
             var jsonSerializer = new JavaScriptSerializer();

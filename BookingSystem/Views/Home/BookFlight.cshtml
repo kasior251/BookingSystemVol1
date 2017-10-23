@@ -35,7 +35,7 @@
             //vis sluttprisen og knappen for å gå videre
             $("#paymentOpts").click(function () {
                 $("#pay").css("visibility", "visible");
-                @{ double totalAmount = price * nr; }
+                @{ int totalAmount = price * nr; }
                 $("#amount").empty().append("Total : " + @(totalAmount));
             });
 
@@ -85,7 +85,7 @@
 
             //regex-check for fornavn og etternavn 
             function checkInput() {
-                var nameRegex = "^[a-zA-Z-_.]{2,20}$";
+                var nameRegex = "^[a-zA-Z-_. ]{2,20}$";
                 var OK = true;
                 for (i = 1; i <= @(nr); i++) {
                     $("#fn" + i).empty();

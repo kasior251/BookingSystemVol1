@@ -15,6 +15,7 @@ namespace BookingSystem.Models
 
         [Display(Name = "Last name")]
         public string lastName { get; set; }
+        public List<Ticket> tickets { get; set; }
 
     }
 }

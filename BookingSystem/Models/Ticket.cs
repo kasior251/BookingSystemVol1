@@ -13,6 +13,6 @@ namespace BookingSystem.Models
 
         public List<Passenger> passengers { get; set; }
 
-        public Schedule schedule { get; set; }
+        public List<Schedule> schedule { get; set; }
     }
 }
