@@ -1,4 +1,5 @@
-﻿using BookingSystem.Models;
+﻿using BookingSystem.DAL;
+using BookingSystem.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 
+//OBS! Er lagt til referanse til DAL for å kunne ref til db - skal være ref til BLL se MVCplenum2-lagdelt film fra 13min
 
 //endre origin og destination til drop-down lister
 namespace BookingSystem.Controllers
@@ -21,7 +23,7 @@ namespace BookingSystem.Controllers
             return View();
         }
 
-        //Få alle mulige avgang-steder
+        //Få alle mulige avgang-steder 
         public string GetOrigin()
         {
             List<Route> allRoutes = db.Routes.ToList();

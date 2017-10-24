@@ -1,0 +1,6 @@
+C:\Users\tovem\Source\Repos\BookingSystem\Model\bin\Debug\Model.dll
+C:\Users\tovem\Source\Repos\BookingSystem\Model\bin\Debug\Model.pdb
+C:\Users\tovem\Source\Repos\BookingSystem\Model\obj\Debug\Model.csprojResolveAssemblyReference.cache
+C:\Users\tovem\Source\Repos\BookingSystem\Model\obj\Debug\Model.csproj.CoreCompileInputs.cache
+C:\Users\tovem\Source\Repos\BookingSystem\Model\obj\Debug\Model.dll
+C:\Users\tovem\Source\Repos\BookingSystem\Model\obj\Debug\Model.pdb

@@ -2,9 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\BookingSystem",
+    "\\BookingSystem\\App_Data",
+    "\\BookingSystem\\App_Start",
     "\\BookingSystem\\Controllers",
-    "\\BookingSystem\\images"
+    "\\BookingSystem\\Models"
   ],
-  "SelectedNode": "\\BookingSystem.sln",
+  "SelectedNode": "\\BookingSystem\\Web.Release.config",
   "PreviewInSolutionExplorer": false
 }
